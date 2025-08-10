@@ -277,14 +277,19 @@ const calculatedData = useMemo(() => {
     // El nombre del partido debe ser EXACTAMENTE igual a como lo tienes en la base de datos.
     // Pega este objeto completo y corregido
 const coloresPorPartido = {
-    "ALIANZA LA LIBERTAD AVANZA": "#7D22A8",     // Morado LLA
-    "PARTIDO LIBERTARIO": "#FFD700",             // Amarillo PRO
-    "FUERZA PATRIA": "#00BFFF",                  // Celeste UxP
-    "ALIANZA FRENTE DE IZQUIERDA Y DE TRABAJADORES UNIDAD": "#FF0000", // Rojo FIT
-    "VOTOS EN BLANCO": "#CCCCCC",                // Gris para votos en blanco
-    // --- Puedes añadir más partidos y colores aquí ---
-    // "OTRO PARTIDO": "#CODIGO_COLOR",
-};
+    // Nombres exactos de tu base de datos
+    "ALIANZA LA LIBERTAD AVANZA": "#7D22A8",
+    "PARTIDO LIBERTARIO": "#FFD700",
+    "ALIANZA UNION Y LIBERTAD": "#2ecc71",       // Verde
+    "MOVIMIENTO AVANZADA SOCIALISTA": "#e74c3c", // Rojo
+    "ALIANZA SOMOS BUENOS AIRES": "#3498db",  // Azul
+    "PARTIDO FRENTE PATRIOTA FEDERAL": "#f1c40f", // Amarillo oscuro
+    "PARTIDO POLITICA OBRERA": "#e67e22",      // Naranja
+    "ALIANZA POTENCIA": "#1abc9c",             // Turquesa
+    "ALIANZA NUEVOS AIRES": "#9b59b6",         // Morado claro
+    // Añade cualquier otro partido aquí
+};```
+
 
     // (El resto de la lógica de filtros y conteo de votos no cambia)
     let resultadosAMostrar = data.resultados;
