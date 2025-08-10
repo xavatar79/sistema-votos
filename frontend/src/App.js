@@ -1,5 +1,3 @@
-// CÓDIGO CORRECTO PARA app.js
-
 import React, { useState, useEffect, useMemo } from 'react';
 import io from 'socket.io-client';
 import { Bar } from 'react-chartjs-2';
@@ -7,6 +5,7 @@ import * as XLSX from 'xlsx';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import './App.css'; 
 
+// Registrar componentes y conectar al socket
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 const SOCKET_URL = 'https://servidor-votos-avellaneda.onrender.com';
 const socket = io(SOCKET_URL);
@@ -51,7 +50,7 @@ const GestionEstablecimientos = ({ establecimientos, onAdd, onDelete }) => {
         <div className="gestion-section">
             <h3>Establecimientos</h3>
             <ul>
-                {establecimientos.map(e => <li key={e.id}><span>{e.nombre} ({e.direccion})</span><button onClick={() => onDelete(e.id)} className="delete-btn">X</button></li>)}
+                {establecimientos.map(e => <li key={e.id}><span>{e.nombre}</span><button onClick={() => onDelete(e.id)} className="delete-btn">X</button></li>)}
             </ul>
             <form onSubmit={handleSubmit}>
                 <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Nombre Escuela" required />
@@ -65,6 +64,7 @@ const GestionEstablecimientos = ({ establecimientos, onAdd, onDelete }) => {
 const GestionMesas = ({ mesas, establecimientos, onAdd, onDelete }) => {
     const [numero, setNumero] = useState('');
     const [idEstablecimiento, setIdEstablecimiento] = useState('');
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (numero && idEstablecimiento) {
@@ -79,12 +79,7 @@ const GestionMesas = ({ mesas, establecimientos, onAdd, onDelete }) => {
             <ul>
                 {mesas.map(m => {
                     const est = establecimientos.find(e => e.id === m.id_establecimiento);
-                    return (
-                        <li key={m.id}>
-                            <span>Mesa: {m.numero} ({est ? est.nombre : 'N/A'})</span>
-                            <button onClick={() => onDelete(m.id)} className="delete-btn">X</button>
-                        </li>
-                    );
+                    return <li key={m.id}><span>Mesa: {m.numero} ({est ? est.nombre : 'N/A'})</span><button onClick={() => onDelete(m.id)} className="delete-btn">X</button></li>
                 })}
             </ul>
             <form onSubmit={handleSubmit}>
@@ -98,7 +93,6 @@ const GestionMesas = ({ mesas, establecimientos, onAdd, onDelete }) => {
         </div>
     );
 };
-
 
 const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
     const [idMesa, setIdMesa] = useState('');
@@ -153,25 +147,19 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
                     <option value="">-- Seleccionar Mesa --</option>
                     {establecimientos.map(est => (
                         <optgroup label={est.nombre} key={est.id}>
-                            {mesas.filter(m => m.id_establecimiento === est.id).sort((a,b) => parseInt(a.numero) - parseInt(b.numero)).map(m => (
+                            {mesas.filter(m => m.id_establecimiento === est.id).map(m => (
                                 <option key={m.id} value={m.id}>Mesa: {m.numero}</option>
                             ))}
                         </optgroup>
                     ))}
                 </select>
-                
                 {idMesa && (
                     <>
                         <div className="votos-inputs">
                             {partidos.map(p => (
                                 <div key={p.id}>
                                     <label>{p.nombre}</label>
-                                    <input 
-                                        type="number" 
-                                        value={votos[p.id] || ''} 
-                                        onChange={e => handleVoteChange(p.id, e.target.value)} 
-                                        placeholder="Votos" 
-                                    />
+                                    <input type="number" value={votos[p.id] || ''} onChange={e => handleVoteChange(p.id, e.target.value)} placeholder="Votos" />
                                 </div>
                             ))}
                         </div>
@@ -186,7 +174,6 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
         </div>
     );
 };
-
 
 const AdminPanel = ({ data, onLogout }) => {
     const handleApiCall = async (endpoint, method, body = null) => {
@@ -204,19 +191,8 @@ const AdminPanel = ({ data, onLogout }) => {
             <div className="admin-sections">
                 <GestionPartidos partidos={data.partidos || []} onAdd={(body) => handleApiCall('/api/partidos', 'POST', body)} onDelete={(id) => handleApiCall(`/api/partidos/${id}`, 'DELETE')} />
                 <GestionEstablecimientos establecimientos={data.establecimientos || []} onAdd={(body) => handleApiCall('/api/establecimientos', 'POST', body)} onDelete={(id) => handleApiCall(`/api/establecimientos/${id}`, 'DELETE')} />
-                <GestionMesas 
-                    mesas={data.mesas || []} 
-                    establecimientos={data.establecimientos || []} 
-                    onAdd={(body) => handleApiCall('/api/mesas', 'POST', body)} 
-                    onDelete={(id) => handleApiCall(`/api/mesas/${id}`, 'DELETE')}
-                />
-                <CargaVotos 
-                    data={data}
-                    partidos={data.partidos || []} 
-                    mesas={data.mesas || []} 
-                    establecimientos={data.establecimientos || []} 
-                    onCargar={(body) => handleApiCall('/api/cargar-votos', 'POST', body)} 
-                />
+                <GestionMesas mesas={data.mesas || []} establecimientos={data.establecimientos || []} onAdd={(body) => handleApiCall('/api/mesas', 'POST', body)} onDelete={(id) => handleApiCall(`/api/mesas/${id}`, 'DELETE')} />
+                <CargaVotos data={data} partidos={data.partidos || []} mesas={data.mesas || []} establecimientos={data.establecimientos || []} onCargar={(body) => handleApiCall('/api/cargar-votos', 'POST', body)} />
             </div>
         </div>
     );
@@ -243,7 +219,6 @@ const LoginScreen = ({ onLogin }) => {
 
 const TotalsTable = ({ totals }) => {
     const sortedTotals = Object.entries(totals).sort(([, a], [, b]) => b - a);
-
     return (
         <div className="totals-container">
             <h3>Votos Totales por Partido</h3>
@@ -267,77 +242,30 @@ const TotalsTable = ({ totals }) => {
     );
 };
 
-const calculatedData = useMemo(() => {
-    if (!data.resultados || !data.partidos) {
-        return { chartData: { labels: [], datasets: [] }, totals: {} };
-    }
-
-    // 1. DEFINIR LA PALETA DE COLORES
-    // Aquí es donde asignas un color a cada partido.
-    // El nombre del partido debe ser EXACTAMENTE igual a como lo tienes en la base de datos.
-    // Pega este objeto completo y corregido
-const coloresPorPartido = {
-    // Nombres exactos de tu base de datos
-    "ALIANZA LA LIBERTAD AVANZA": "#7D22A8",
-    "PARTIDO LIBERTARIO": "#FFD700",
-    "ALIANZA UNION Y LIBERTAD": "#2ecc71",       // Verde
-    "MOVIMIENTO AVANZADA SOCIALISTA": "#e74c3c", // Rojo
-    "ALIANZA SOMOS BUENOS AIRES": "#3498db",  // Azul
-    "PARTIDO FRENTE PATRIOTA FEDERAL": "#f1c40f", // Amarillo oscuro
-    "PARTIDO POLITICA OBRERA": "#e67e22",      // Naranja
-    "ALIANZA POTENCIA": "#1abc9c",             // Turquesa
-    "ALIANZA NUEVOS AIRES": "#9b59b6",         // Morado claro
-    // Añade cualquier otro partido aquí
-};```
-
-
-    // (El resto de la lógica de filtros y conteo de votos no cambia)
-    let resultadosAMostrar = data.resultados;
-    if (filtroEst !== 'todos') {
-        const mesasDelEstablecimiento = data.mesas.filter(m => m.id_establecimiento === filtroEst).map(m => m.id);
-        resultadosAMostrar = resultadosAMostrar.filter(r => mesasDelEstablecimiento.includes(r.id_mesa));
-    }
-    if (filtroMesa !== 'todos') {
-        resultadosAMostrar = resultadosAMostrar.filter(r => r.id_mesa === filtroMesa);
-    }
-    
-    const votosPorPartido = {};
-    resultadosAMostrar.forEach(res => {
-        const partido = data.partidos.find(p => p.id === res.id_partido);
-        if (partido) {
-            votosPorPartido[partido.nombre] = (votosPorPartido[partido.nombre] || 0) + res.cantidad_votos;
-        }
-    });
-    
-    const sortedTotals = Object.entries(votosPorPartido).sort(([, a], [, b]) => b - a);
-
-    // 2. GENERAR EL ARRAY DE COLORES EN EL ORDEN CORRECTO
-    // Recorremos los resultados ya ordenados y creamos una lista de colores
-    // que coincide con el orden de las barras en el gráfico.
-    const coloresDeBarras = sortedTotals.map(([nombrePartido, _]) => {
-        // Busca el color en nuestra paleta. Si no lo encuentra, usa un color azul por defecto.
-        return coloresPorPartido[nombrePartido] || '#36A2EB'; 
-    });
-
-    // 3. CONSTRUIR LOS DATOS DEL GRÁFICO
-    const chartData = {
-        labels: sortedTotals.map(item => item[0]),
-        datasets: [{ 
-            label: 'Votos', 
-            data: sortedTotals.map(item => item[1]), 
-            backgroundColor: coloresDeBarras // Usamos nuestro array de colores dinámico
-        }],
-    };
-
-    return { chartData, totals: votosPorPartido };
-
-}, [data, filtroEst, filtroMesa]);
-
+const PublicDashboard = ({ data }) => {
     const [filtroEst, setFiltroEst] = useState('todos');
     const [filtroMesa, setFiltroMesa] = useState('todos');
 
     const calculatedData = useMemo(() => {
-        if (!data.resultados || !data.partidos) return { chartData: { labels: [], datasets: [] }, totals: {} };
+        if (!data.resultados || !data.partidos) {
+            return { chartData: { labels: [], datasets: [] }, totals: {} };
+        }
+
+        // 1. DEFINE TU PALETA DE COLORES PERSONALIZADA AQUÍ
+        const coloresPorPartido = {
+            "ALIANZA LA LIBERTAD AVANZA": "#7D22A8",
+            "PARTIDO LIBERTARIO": "#FFD700",
+            "ALIANZA UNION Y LIBERTAD": "#2ecc71",
+            "MOVIMIENTO AVANZADA SOCIALISTA": "#e74c3c",
+            "ALIANZA SOMOS BUENOS AIRES": "#3498db",
+            "PARTIDO FRENTE PATRIOTA FEDERAL": "#f1c40f",
+            "PARTIDO POLITICA OBRERA": "#e67e22",
+            "ALIANZA POTENCIA": "#1abc9c",
+            "ALIANZA NUEVOS AIRES": "#9b59b6",
+            // Asegúrate de que los nombres de los partidos aquí
+            // sean EXACTAMENTE iguales a como están en tu base de datos.
+        };
+
         let resultadosAMostrar = data.resultados;
         if (filtroEst !== 'todos') {
             const mesasDelEstablecimiento = data.mesas.filter(m => m.id_establecimiento === filtroEst).map(m => m.id);
@@ -346,6 +274,7 @@ const coloresPorPartido = {
         if (filtroMesa !== 'todos') {
             resultadosAMostrar = resultadosAMostrar.filter(r => r.id_mesa === filtroMesa);
         }
+        
         const votosPorPartido = {};
         resultadosAMostrar.forEach(res => {
             const partido = data.partidos.find(p => p.id === res.id_partido);
@@ -355,9 +284,18 @@ const coloresPorPartido = {
         });
         
         const sortedTotals = Object.entries(votosPorPartido).sort(([, a], [, b]) => b - a);
+
+        const coloresDeBarras = sortedTotals.map(([nombrePartido, _]) => {
+            return coloresPorPartido[nombrePartido] || '#36A2EB'; // Color por defecto si no se encuentra
+        });
+
         const chartData = {
             labels: sortedTotals.map(item => item[0]),
-            datasets: [{ label: 'Votos', data: sortedTotals.map(item => item[1]), backgroundColor: ['#74C6F4', '#FFB347', '#83F28F', '#FF6384', '#36A2EB'] }],
+            datasets: [{ 
+                label: 'Votos', 
+                data: sortedTotals.map(item => item[1]), 
+                backgroundColor: coloresDeBarras
+            }],
         };
 
         return { chartData, totals: votosPorPartido };
@@ -372,7 +310,7 @@ const coloresPorPartido = {
         XLSX.writeFile(workbook, "ResultadosElectorales.xlsx");
     };
 
-    if (!data.partidos) return <p>Esperando datos del servidor...</p>;
+    if (!data.partidos || data.partidos.length === 0) return <p>Esperando datos del servidor...</p>;
 
     return (
         <div className="public-dashboard">
@@ -380,11 +318,11 @@ const coloresPorPartido = {
             <div className="filtros">
                 <select value={filtroEst} onChange={e => { setFiltroEst(e.target.value); setFiltroMesa('todos'); }}>
                     <option value="todos">Todos los Establecimientos</option>
-                    {(data.establecimientos || []).sort((a, b) => a.nombre.localeCompare(b.nombre)).map(est => <option key={est.id} value={est.id}>{est.nombre}</option>)}
+                    {(data.establecimientos || []).map(est => <option key={est.id} value={est.id}>{est.nombre}</option>)}
                 </select>
                 <select value={filtroMesa} onChange={e => setFiltroMesa(e.target.value)} disabled={filtroEst === 'todos'}>
                     <option value="todos">Todas las Mesas</option>
-                    {(data.mesas || []).filter(m => m.id_establecimiento === filtroEst).sort((a,b) => parseInt(a.numero) - parseInt(b.numero)).map(mesa => <option key={mesa.id} value={mesa.id}>Mesa: {mesa.numero}</option>)}
+                    {(data.mesas || []).filter(m => m.id_establecimiento === filtroEst).map(mesa => <option key={mesa.id} value={mesa.id}>{mesa.numero}</option>)}
                 </select>
             </div>
             <div className="dashboard-content">
@@ -405,7 +343,7 @@ const coloresPorPartido = {
                         const est = mesa ? data.establecimientos.find(e => e.id === mesa.id_establecimiento) : null;
                         const partido = data.partidos.find(p => p.id === res.id_partido);
                         return { ...res, mesa, est, partido };
-                    }).filter(res => res.est && res.partido && res.mesa).sort((a, b) => parseInt(a.mesa.numero) - parseInt(b.mesa.numero)).map(res => (
+                    }).filter(res => res.est && res.partido && res.mesa).map(res => (
                         <tr key={res.id} className={res.esDudosa ? 'dudosa' : ''}>
                             <td>{res.est.nombre}</td>
                             <td>Mesa: {res.mesa.numero} {res.esDudosa && '⚠️'}</td>
@@ -425,16 +363,16 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        socket.on('connect', () => {
-            console.log('Conectado al servidor de websockets.');
-        });
+        // Carga inicial de datos vía HTTP
         fetch(`${SOCKET_URL}/api/estado`).then(res => res.json()).then(setData).catch(err => console.error("Error al cargar estado inicial:", err));
+        
+        // Conexión WebSocket para actualizaciones en tiempo real
         socket.on('actualizacion_global', (serverState) => { 
-            console.log('Recibida actualizacion_global');
             setData(serverState); 
         });
+        
+        // Limpieza al desmontar el componente
         return () => {
-            socket.off('connect');
             socket.off('actualizacion_global');
         }
     }, []);
