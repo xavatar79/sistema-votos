@@ -275,16 +275,16 @@ const calculatedData = useMemo(() => {
     // 1. DEFINIR LA PALETA DE COLORES
     // Aquí es donde asignas un color a cada partido.
     // El nombre del partido debe ser EXACTAMENTE igual a como lo tienes en la base de datos.
-    const coloresPorPartido = {
-        "ALIANZA LA LIBERTAD AVANZA": "#7D22A8",     // Morado LLA
-        "PARTIDO LIBERTARIO": "#FFD700",  // Amarillo PRO
-        "FUERZA PATRIA": "#00BFFF",   // Celeste UxP
-        "ALIANZA FRENTE DE IZQUIERDA Y DE TRABAJADORES UNIDAD
-": "#FF0000",   // Rojo FIT
-        "VOTOS EN BLANCO": "#CCCCCC",       // Gris para votos en blanco
-        // --- Puedes añadir más partidos y colores aquí ---
-        // "OTRO PARTIDO": "#CODIGO_COLOR",
-    };
+    // Pega este objeto completo y corregido
+const coloresPorPartido = {
+    "ALIANZA LA LIBERTAD AVANZA": "#7D22A8",     // Morado LLA
+    "PARTIDO LIBERTARIO": "#FFD700",             // Amarillo PRO
+    "FUERZA PATRIA": "#00BFFF",                  // Celeste UxP
+    "ALIANZA FRENTE DE IZQUIERDA Y DE TRABAJADORES UNIDAD": "#FF0000", // Rojo FIT
+    "VOTOS EN BLANCO": "#CCCCCC",                // Gris para votos en blanco
+    // --- Puedes añadir más partidos y colores aquí ---
+    // "OTRO PARTIDO": "#CODIGO_COLOR",
+};
 
     // (El resto de la lógica de filtros y conteo de votos no cambia)
     let resultadosAMostrar = data.resultados;
