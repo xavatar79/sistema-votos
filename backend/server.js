@@ -209,7 +209,12 @@ poblarDatosIniciales();
 
 // --- CONFIGURACIÓN DEL SERVIDOR ---
 const app = express();
-app.use(cors());
+
+// Nueva configuración de CORS
+app.use(cors({
+  origin: "https://sistema-votos-five.vercel.app" // ¡Usa la URL real de tu Vercel aquí!
+}));
+
 app.use(express.json());
 
 const server = http.createServer(app);
