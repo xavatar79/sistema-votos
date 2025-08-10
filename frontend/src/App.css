@@ -1,0 +1,264 @@
+/* --- Importar Tipografía Profesional (Montserrat) --- */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+/* --- Definición de Colores y Estilos Base --- */
+:root {
+    --primary-blue: #002366;
+    --accent-yellow: #f0a500;
+    --light-gray: #f4f7f6;
+    --dark-text: #333;
+    --light-text: #ffffff;
+    --border-color: #dee2e6;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--light-gray);
+    color: var(--dark-text);
+    margin: 0;
+    font-size: 16px;
+}
+
+/* --- Barra de Navegación --- */
+nav {
+    background-color: var(--primary-blue);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+nav button {
+    background-color: var(--accent-yellow);
+    color: var(--primary-blue);
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+nav button:hover {
+    background-color: #ffc107;
+    transform: translateY(-2px);
+}
+
+/* --- Contenedor Principal --- */
+main {
+    padding: 2rem 3rem;
+}
+
+/* --- Títulos --- */
+h1, h2, h3 {
+    color: var(--primary-blue);
+    font-weight: 700;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+h2 {
+    font-size: 2rem;
+    border-bottom: 2px solid var(--accent-yellow);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* --- Dashboard Público --- */
+.public-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.filtros {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.filtros select {
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    min-width: 250px;
+}
+
+.dashboard-content {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.grafico-container {
+    flex: 3; /* Ocupa más espacio */
+    padding: 2rem;
+    background: var(--light-text);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.totals-container {
+    flex: 2; /* Ocupa menos espacio */
+}
+
+.export-button {
+    display: block;
+    margin: 2rem auto 0;
+    padding: 12px 24px;
+    font-size: 1rem;
+    background-color: #1D6F42;
+    color: var(--light-text);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+/* --- Tablas --- */
+.results-table, .totals-table {
+    width: 100%;
+    margin-top: 1rem;
+    border-collapse: collapse;
+    background: var(--light-text);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.results-table th, .results-table td,
+.totals-table th, .totals-table td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem;
+    text-align: left;
+}
+.results-table th, .totals-table th {
+    background-color: #f8f9fa;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+.results-table tr.dudosa {
+    background-color: #FFF3CD;
+    color: #664d03;
+    font-weight: 500;
+}
+
+/* --- Panel de Administración --- */
+.admin-panel {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.logout-button {
+    background-color: #D8000C !important;
+    position: absolute;
+    top: 10px;
+    right: 0;
+}
+
+.admin-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 2rem;
+}
+
+.gestion-section {
+    background-color: var(--light-text);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.gestion-section ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.5rem;
+}
+
+.gestion-section li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1rem;
+}
+
+.gestion-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.gestion-section input, .gestion-section select {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.gestion-section button {
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    background-color: var(--primary-blue);
+    color: var(--light-text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background: #ff4d4d;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
+.carga-votos .votos-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+.carga-votos .votos-inputs > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.checkbox-dudosa {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+/* --- Login --- */
+.login-container {
+    max-width: 450px;
+    margin: 4rem auto;
+    padding: 3rem;
+    background: var(--light-text);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    text-align: center;
+}
+.login-container input, .login-container button {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+}
+.error-message {
+    color: #D8000C;
+    font-weight: 700;
+}
