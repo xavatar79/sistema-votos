@@ -8,7 +8,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import './App.css'; 
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-const SOCKET_URL = 'http://localhost:4000';
+const SOCKET_URL = 'https://servidor-votos-avellaneda.onrender.com';
 const socket = io(SOCKET_URL);
 
 // --- COMPONENTES DE GESTIÓN DEL ADMIN PANEL ---
