@@ -219,9 +219,11 @@ app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*", methods: ["GET", "POST", "PUT", "DELETE"] }
+  cors: {
+    origin: "https://sistema-votos-five.vercel.app", // ¡La URL de tu sitio en Vercel!
+    methods: ["GET", "POST", "PUT", "DELETE"]
+  }
 });
-
 const PORT = 4000;
 const ADMIN_PASSWORD = "LLA_AVELLANEDA_2025";
 
