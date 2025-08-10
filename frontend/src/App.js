@@ -261,7 +261,7 @@ const PublicDashboard = ({ data }) => {
             "PARTIDO FRENTE PATRIOTA FEDERAL": "#f1c40f",
             "PARTIDO POLITICA OBRERA": "#e67e22",
             "ALIANZA POTENCIA": "#1abc9c",
-            "ALIANZA NUEVOS AIRES": "#7c787eff",
+            "ALIANZA NUEVOS AIRES": "#2beb12ff",
             "FUERZA PATRIA" : "#3498db",
             // Asegúrate de que los nombres de los partidos aquí
             // sean EXACTAMENTE iguales a como están en tu base de datos.
