@@ -267,7 +267,67 @@ const TotalsTable = ({ totals }) => {
     );
 };
 
-const PublicDashboard = ({ data }) => {
+const calculatedData = useMemo(() => {
+    if (!data.resultados || !data.partidos) {
+        return { chartData: { labels: [], datasets: [] }, totals: {} };
+    }
+
+    // 1. DEFINIR LA PALETA DE COLORES
+    // Aquí es donde asignas un color a cada partido.
+    // El nombre del partido debe ser EXACTAMENTE igual a como lo tienes en la base de datos.
+    const coloresPorPartido = {
+        "ALIANZA LA LIBERTAD AVANZA": "#7D22A8",     // Morado LLA
+        "PARTIDO LIBERTARIO": "#FFD700",  // Amarillo PRO
+        "FUERZA PATRIA": "#00BFFF",   // Celeste UxP
+        "ALIANZA FRENTE DE IZQUIERDA Y DE TRABAJADORES UNIDAD
+": "#FF0000",   // Rojo FIT
+        "VOTOS EN BLANCO": "#CCCCCC",       // Gris para votos en blanco
+        // --- Puedes añadir más partidos y colores aquí ---
+        // "OTRO PARTIDO": "#CODIGO_COLOR",
+    };
+
+    // (El resto de la lógica de filtros y conteo de votos no cambia)
+    let resultadosAMostrar = data.resultados;
+    if (filtroEst !== 'todos') {
+        const mesasDelEstablecimiento = data.mesas.filter(m => m.id_establecimiento === filtroEst).map(m => m.id);
+        resultadosAMostrar = resultadosAMostrar.filter(r => mesasDelEstablecimiento.includes(r.id_mesa));
+    }
+    if (filtroMesa !== 'todos') {
+        resultadosAMostrar = resultadosAMostrar.filter(r => r.id_mesa === filtroMesa);
+    }
+    
+    const votosPorPartido = {};
+    resultadosAMostrar.forEach(res => {
+        const partido = data.partidos.find(p => p.id === res.id_partido);
+        if (partido) {
+            votosPorPartido[partido.nombre] = (votosPorPartido[partido.nombre] || 0) + res.cantidad_votos;
+        }
+    });
+    
+    const sortedTotals = Object.entries(votosPorPartido).sort(([, a], [, b]) => b - a);
+
+    // 2. GENERAR EL ARRAY DE COLORES EN EL ORDEN CORRECTO
+    // Recorremos los resultados ya ordenados y creamos una lista de colores
+    // que coincide con el orden de las barras en el gráfico.
+    const coloresDeBarras = sortedTotals.map(([nombrePartido, _]) => {
+        // Busca el color en nuestra paleta. Si no lo encuentra, usa un color azul por defecto.
+        return coloresPorPartido[nombrePartido] || '#36A2EB'; 
+    });
+
+    // 3. CONSTRUIR LOS DATOS DEL GRÁFICO
+    const chartData = {
+        labels: sortedTotals.map(item => item[0]),
+        datasets: [{ 
+            label: 'Votos', 
+            data: sortedTotals.map(item => item[1]), 
+            backgroundColor: coloresDeBarras // Usamos nuestro array de colores dinámico
+        }],
+    };
+
+    return { chartData, totals: votosPorPartido };
+
+}, [data, filtroEst, filtroMesa]);
+
     const [filtroEst, setFiltroEst] = useState('todos');
     const [filtroMesa, setFiltroMesa] = useState('todos');
 
