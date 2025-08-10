@@ -7,6 +7,7 @@ import './App.css';
 
 // Registrar componentes y conectar al socket
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+// ¡IMPORTANTE! Esta URL debe ser la de tu backend en Render
 const SOCKET_URL = 'https://servidor-votos-avellaneda.onrender.com';
 const socket = io(SOCKET_URL);
 
@@ -23,7 +24,6 @@ const GestionPartidos = ({ partidos, onAdd, onDelete }) => {
     };
     return (
         <div className="gestion-section">
-            <h3>Partidos Políticos</h3>
             <ul>
                 {partidos.map(p => <li key={p.id}><span>{p.nombre}</span><button onClick={() => onDelete(p.id)} className="delete-btn">X</button></li>)}
             </ul>
@@ -48,7 +48,6 @@ const GestionEstablecimientos = ({ establecimientos, onAdd, onDelete }) => {
     };
     return (
         <div className="gestion-section">
-            <h3>Establecimientos</h3>
             <ul>
                 {establecimientos.map(e => <li key={e.id}><span>{e.nombre}</span><button onClick={() => onDelete(e.id)} className="delete-btn">X</button></li>)}
             </ul>
@@ -75,7 +74,6 @@ const GestionMesas = ({ mesas, establecimientos, onAdd, onDelete }) => {
     };
     return (
         <div className="gestion-section">
-            <h3>Mesas</h3>
             <ul>
                 {mesas.map(m => {
                     const est = establecimientos.find(e => e.id === m.id_establecimiento);
@@ -141,7 +139,6 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
 
     return (
         <div className="gestion-section carga-votos">
-            <h3>Carga y Modificación de Votos</h3>
             <form onSubmit={handleSubmit}>
                 <select value={idMesa} onChange={e => setIdMesa(e.target.value)} required>
                     <option value="">-- Seleccionar Mesa --</option>
@@ -189,10 +186,44 @@ const AdminPanel = ({ data, onLogout }) => {
             <h2>Panel de Control</h2>
             <button onClick={onLogout} className="logout-button">Cerrar Sesión</button>
             <div className="admin-sections">
-                <GestionPartidos partidos={data.partidos || []} onAdd={(body) => handleApiCall('/api/partidos', 'POST', body)} onDelete={(id) => handleApiCall(`/api/partidos/${id}`, 'DELETE')} />
-                <GestionEstablecimientos establecimientos={data.establecimientos || []} onAdd={(body) => handleApiCall('/api/establecimientos', 'POST', body)} onDelete={(id) => handleApiCall(`/api/establecimientos/${id}`, 'DELETE')} />
-                <GestionMesas mesas={data.mesas || []} establecimientos={data.establecimientos || []} onAdd={(body) => handleApiCall('/api/mesas', 'POST', body)} onDelete={(id) => handleApiCall(`/api/mesas/${id}`, 'DELETE')} />
-                <CargaVotos data={data} partidos={data.partidos || []} mesas={data.mesas || []} establecimientos={data.establecimientos || []} onCargar={(body) => handleApiCall('/api/cargar-votos', 'POST', body)} />
+                <details className="admin-details">
+                    <summary className="admin-summary">Gestionar Partidos Políticos</summary>
+                    <GestionPartidos 
+                        partidos={data.partidos || []} 
+                        onAdd={(body) => handleApiCall('/api/partidos', 'POST', body)} 
+                        onDelete={(id) => handleApiCall(`/api/partidos/${id}`, 'DELETE')} 
+                    />
+                </details>
+
+                <details className="admin-details">
+                    <summary className="admin-summary">Gestionar Establecimientos</summary>
+                    <GestionEstablecimientos 
+                        establecimientos={data.establecimientos || []} 
+                        onAdd={(body) => handleApiCall('/api/establecimientos', 'POST', body)} 
+                        onDelete={(id) => handleApiCall(`/api/establecimientos/${id}`, 'DELETE')} 
+                    />
+                </details>
+
+                <details className="admin-details">
+                    <summary className="admin-summary">Gestionar Mesas</summary>
+                    <GestionMesas 
+                        mesas={data.mesas || []} 
+                        establecimientos={data.establecimientos || []} 
+                        onAdd={(body) => handleApiCall('/api/mesas', 'POST', body)} 
+                        onDelete={(id) => handleApiCall(`/api/mesas/${id}`, 'DELETE')} 
+                    />
+                </details>
+
+                <details className="admin-details" open>
+                    <summary className="admin-summary">Cargar y Modificar Votos</summary>
+                    <CargaVotos 
+                        data={data} 
+                        partidos={data.partidos || []} 
+                        mesas={data.mesas || []} 
+                        establecimientos={data.establecimientos || []} 
+                        onCargar={(body) => handleApiCall('/api/cargar-votos', 'POST', body)} 
+                    />
+                </details>
             </div>
         </div>
     );
@@ -251,18 +282,16 @@ const PublicDashboard = ({ data }) => {
             return { chartData: { labels: [], datasets: [] }, totals: {} };
         }
 
-        // 1. DEFINE TU PALETA DE COLORES PERSONALIZADA AQUÍ
         const coloresPorPartido = {
             "ALIANZA LA LIBERTAD AVANZA": "#7D22A8",
             "PARTIDO LIBERTARIO": "#FFD700",
             "ALIANZA UNION Y LIBERTAD": "#2ecc71",
             "MOVIMIENTO AVANZADA SOCIALISTA": "#e74c3c",
-            "ALIANZA SOMOS BUENOS AIRES": "#3499db",
+            "ALIANZA SOMOS BUENOS AIRES": "#3498db",
             "PARTIDO FRENTE PATRIOTA FEDERAL": "#f1c40f",
             "PARTIDO POLITICA OBRERA": "#e67e22",
             "ALIANZA POTENCIA": "#1abc9c",
-            "ALIANZA NUEVOS AIRES": "#2beb12ff",
-            "FUERZA PATRIA" : "#3498db",
+            "ALIANZA NUEVOS AIRES": "#9b59b6",
             // Asegúrate de que los nombres de los partidos aquí
             // sean EXACTAMENTE iguales a como están en tu base de datos.
         };
@@ -364,15 +393,12 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        // Carga inicial de datos vía HTTP
         fetch(`${SOCKET_URL}/api/estado`).then(res => res.json()).then(setData).catch(err => console.error("Error al cargar estado inicial:", err));
         
-        // Conexión WebSocket para actualizaciones en tiempo real
         socket.on('actualizacion_global', (serverState) => { 
             setData(serverState); 
         });
         
-        // Limpieza al desmontar el componente
         return () => {
             socket.off('actualizacion_global');
         }

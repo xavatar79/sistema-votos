@@ -1,279 +1,268 @@
-/* --- Importar Tipografía Profesional (Montserrat) --- */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
-
-/* --- Definición de Colores y Estilos Base --- */
-:root {
-    --primary-blue: #002366;
-    --accent-yellow: #f0a500;
-    --light-gray: #f4f7f6;
-    --dark-text: #333;
-    --light-text: #ffffff;
-    --border-color: #dee2e6;
-}
-
 body {
-    font-family: 'Montserrat', sans-serif;
-    background-color: var(--light-gray);
-    color: var(--dark-text);
-    margin: 0;
-    font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f7f6;
+  color: #333;
+  margin: 0;
 }
 
-/* --- Barra de Navegación --- */
+.App {
+  text-align: center;
+}
+
 nav {
-    background-color: var(--primary-blue);
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: #002b49;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  border-bottom: 4px solid #ffd700;
 }
 
 nav button {
-    background-color: var(--accent-yellow);
-    color: var(--primary-blue);
-    border: none;
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+  background-color: #ffd700;
+  color: #002b49;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 nav button:hover {
-    background-color: #ffc107;
-    transform: translateY(-2px);
+  background-color: #fbc02d;
 }
 
-/* --- Contenedor Principal --- */
 main {
-    padding: 2rem 3rem;
+  padding: 2rem;
 }
 
-/* --- Títulos --- */
-h1, h2, h3 {
-    color: var(--primary-blue);
-    font-weight: 700;
-}
-
-h1 {
-    font-size: 2.5rem;
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-h2 {
-    font-size: 2rem;
-    border-bottom: 2px solid var(--accent-yellow);
-    padding-bottom: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-/* --- Dashboard Público --- */
-.public-dashboard {
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.filtros {
-    margin-bottom: 2rem;
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-}
-
-.filtros select {
-    padding: 12px;
-    font-size: 1rem;
-    border-radius: 5px;
-    border: 1px solid var(--border-color);
-    min-width: 250px;
-}
-
-.dashboard-content {
-    display: flex;
-    gap: 2rem;
-    align-items: flex-start;
-}
-
-.grafico-container {
-    flex: 3; /* Ocupa más espacio */
-    padding: 2rem;
-    background: var(--light-text);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-.totals-container {
-    flex: 2; /* Ocupa menos espacio */
-}
-
-.export-button {
-    display: block;
-    margin: 2rem auto 0;
-    padding: 12px 24px;
-    font-size: 1rem;
-    background-color: #1D6F42;
-    color: var(--light-text);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 700;
-}
-
-/* --- Tablas --- */
-.results-table, .totals-table {
-    width: 100%;
-    margin-top: 1rem;
-    border-collapse: collapse;
-    background: var(--light-text);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-.results-table th, .results-table td,
-.totals-table th, .totals-table td {
-    border-bottom: 1px solid var(--border-color);
-    padding: 1rem;
-    text-align: left;
-}
-.results-table th, .totals-table th {
-    background-color: #f8f9fa;
-    font-weight: 700;
-    color: var(--primary-blue);
-}
-.results-table tr.dudosa {
-    background-color: #FFF3CD;
-    color: #664d03;
-    font-weight: 500;
-}
-
-/* --- Panel de Administración --- */
-.admin-panel {
-    max-width: 1400px;
-    margin: 0 auto;
-    position: relative;
-}
-
-.logout-button {
-    background-color: #D8000C !important;
-    position: absolute;
-    top: 10px;
-    right: 0;
-}
-
-.admin-sections {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-    gap: 2rem;
-}
+/* --- ESTILOS GENERALES DE SECCIONES --- */
 
 .gestion-section {
-    background-color: var(--light-text);
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.gestion-section h3 {
+  margin-top: 0;
+  color: #002b49;
+  border-bottom: 2px solid #f4f7f6;
+  padding-bottom: 0.5rem;
 }
 
 .gestion-section ul {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 1.5rem;
+  list-style: none;
+  padding: 0;
 }
 
 .gestion-section li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
 }
 
 .gestion-section form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
-.gestion-section input, .gestion-section select {
-    padding: 12px;
-    font-size: 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+input[type="text"], input[type="password"], input[type="number"], select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
 }
 
-.gestion-section button {
-    padding: 12px;
-    font-size: 1rem;
-    font-weight: 700;
-    background-color: var(--primary-blue);
-    color: var(--light-text);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+button {
+  padding: 12px 15px;
+  background-color: #003366;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
 
 .delete-btn {
-    background: #ff4d4d;
-    padding: 6px 10px;
-    font-size: 0.8rem;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  line-height: 25px;
+  text-align: center;
+  padding: 0;
 }
 
-.carga-votos .votos-inputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+.delete-btn:hover {
+  background-color: #c0392b;
 }
-.carga-votos .votos-inputs > div {
-    display: flex;
-    flex-direction: column;
+
+/* --- PANEL DE ADMIN Y LOGIN --- */
+
+.admin-panel, .login-container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.login-container {
+  max-width: 400px;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.logout-button {
+  position: absolute;
+  top: 85px;
+  right: 20px;
+  background-color: #c0392b;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* --- CARGA DE VOTOS --- */
+
+.votos-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
 }
 
 .checkbox-dudosa {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
 }
 
-/* --- Login --- */
-.login-container {
-    max-width: 450px;
-    margin: 4rem auto;
-    padding: 3rem;
-    background: var(--light-text);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    border-radius: 8px;
-    text-align: center;
+.checkbox-dudosa input {
+  width: 18px;
+  height: 18px;
 }
-.login-container input, .login-container button {
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 1rem;
+
+/* --- DASHBOARD PÚBLICO --- */
+
+.public-dashboard h1 {
+  color: #002b49;
 }
-.error-message {
-    color: #D8000C;
-    font-weight: 700;
+
+.filtros {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
+
+.grafico-container {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+.totals-table, .results-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.totals-table th, .totals-table td, .results-table th, .results-table td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.totals-table th, .results-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.dudosa {
+  background-color: #fff3cd !important;
+  font-weight: bold;
+}
+
+/* --- ESTILOS PARA DESPLEGABLES DEL PANEL DE ADMIN --- */
+
+.admin-details {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background-color: #f9f9f9;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.admin-details[open] {
+  background-color: #fff;
+}
+
+.admin-summary {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 1rem;
+  cursor: pointer;
+  outline: none;
+  list-style: none;
+}
+
+.admin-summary::before {
+  content: '▶';
+  margin-right: 0.5rem;
+  font-size: 0.8em;
+  transition: transform 0.2s ease-in-out;
+}
+
+.admin-details[open] > .admin-summary::before {
+  transform: rotate(90deg);
+}
+
+.admin-details > .gestion-section {
+  padding: 0 1rem 1rem 1rem;
+  border-top: 1px solid #eee;
+}
+
+
 /* --- ESTILOS PARA DISEÑO RESPONSIVO --- */
 
 /* Por defecto, los contenedores tendrán un ancho completo, ideal para móviles */
 .public-dashboard, .admin-panel, .login-container {
-  padding: 1rem; /* Añade un poco de espacio en los bordes */
+  padding: 1rem;
 }
 
 /* En el panel de admin, hacemos que las secciones se apilen verticalmente en móvil */
 .admin-sections {
   display: flex;
-  flex-direction: column; /* Apilar verticalmente por defecto */
-  gap: 2rem;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .dashboard-content {
@@ -286,8 +275,9 @@ h3 {
 @media (min-width: 768px) {
   /* ...vuelve a poner las secciones del admin una al lado de la otra */
   .admin-sections {
-    flex-direction: row; /* Poner en fila en pantallas grandes */
-    flex-wrap: wrap; /* Permitir que los elementos pasen a la siguiente línea si no caben */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
     align-items: flex-start;
   }
 
@@ -298,10 +288,14 @@ h3 {
   }
 
   .grafico-container {
-    width: 60%;
+    flex: 2; /* Que el gráfico ocupe más espacio */
   }
 
   .totals-container {
-    width: 40%;
+    flex: 1; /* Que la tabla ocupe menos */
+  }
+
+  .votos-inputs {
+    grid-template-columns: 1fr 1fr 1fr; /* 3 columnas en pantallas grandes */
   }
 }
