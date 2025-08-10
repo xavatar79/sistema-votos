@@ -262,3 +262,46 @@ h3 {
     color: #D8000C;
     font-weight: 700;
 }
+/* --- ESTILOS PARA DISEÑO RESPONSIVO --- */
+
+/* Por defecto, los contenedores tendrán un ancho completo, ideal para móviles */
+.public-dashboard, .admin-panel, .login-container {
+  padding: 1rem; /* Añade un poco de espacio en los bordes */
+}
+
+/* En el panel de admin, hacemos que las secciones se apilen verticalmente en móvil */
+.admin-sections {
+  display: flex;
+  flex-direction: column; /* Apilar verticalmente por defecto */
+  gap: 2rem;
+}
+
+.dashboard-content {
+    display: flex;
+    flex-direction: column; /* Apilar el gráfico y la tabla en móvil */
+    gap: 2rem;
+}
+
+/* Media Query: Si la pantalla es más ancha de 768px (tablets y PCs)... */
+@media (min-width: 768px) {
+  /* ...vuelve a poner las secciones del admin una al lado de la otra */
+  .admin-sections {
+    flex-direction: row; /* Poner en fila en pantallas grandes */
+    flex-wrap: wrap; /* Permitir que los elementos pasen a la siguiente línea si no caben */
+    align-items: flex-start;
+  }
+
+  /* Y también el contenido del dashboard */
+  .dashboard-content {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .grafico-container {
+    width: 60%;
+  }
+
+  .totals-container {
+    width: 40%;
+  }
+}
