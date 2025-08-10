@@ -257,11 +257,12 @@ const PublicDashboard = ({ data }) => {
             "PARTIDO LIBERTARIO": "#FFD700",
             "ALIANZA UNION Y LIBERTAD": "#2ecc71",
             "MOVIMIENTO AVANZADA SOCIALISTA": "#e74c3c",
-            "ALIANZA SOMOS BUENOS AIRES": "#3498db",
+            "ALIANZA SOMOS BUENOS AIRES": "#3499db",
             "PARTIDO FRENTE PATRIOTA FEDERAL": "#f1c40f",
             "PARTIDO POLITICA OBRERA": "#e67e22",
             "ALIANZA POTENCIA": "#1abc9c",
-            "ALIANZA NUEVOS AIRES": "#9b59b6",
+            "ALIANZA NUEVOS AIRES": "#7c787eff",
+            "FUERZA PATRIA" : "#3498db",
             // Asegúrate de que los nombres de los partidos aquí
             // sean EXACTAMENTE iguales a como están en tu base de datos.
         };
