@@ -6,17 +6,13 @@ const mongoose = require('mongoose');
 const { nanoid } = require('nanoid');
 
 // --- CONFIGURACIÓN DE LA BASE DE DATOS (MongoDB Atlas) ---
-// Es mucho más seguro poner esto en las "Environment Variables" de Render
-// En el panel de Render -> Environment -> Add Environment Variable:
-// Key: MONGO_URI
-// Value: Tu cadena de conexión
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://<db_username>:<db_password>@cluster0.yi3mf87.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // --- MODELOS DE DATOS ---
-const Partido = mongoose.model('Partido', new mongoose.Schema({ id: String, nombre: String }));
-const Establecimiento = mongoose.model('Establecimiento', new mongoose.Schema({ id: String, nombre: String, direccion: String }));
-const Mesa = mongoose.model('Mesa', new mongoose.Schema({ id: String, numero: String, id_establecimiento: String }));
-const Resultado = mongoose.model('Resultado', new mongoose.Schema({ id: String, id_mesa: String, id_partido: String, cantidad_votos: Number, esDudosa: Boolean }));
+const Partido = mongoose.model('Partido', new mongoose.Schema({ id: String, nombre: String }), 'partidos');
+const Establecimiento = mongoose.model('Establecimiento', new mongoose.Schema({ id: String, nombre: String, direccion: String }), 'establecimientos');
+const Mesa = mongoose.model('Mesa', new mongoose.Schema({ id: String, numero: String, id_establecimiento: String }), 'mesas');
+const Resultado = mongoose.model('Resultado', new mongoose.Schema({ id: String, id_mesa: String, id_partido: String, cantidad_votos: Number, esDudosa: Boolean }), 'resultados');
 
 // --- FUNCIÓN PRINCIPAL DE ARRANQUE ---
 async function startServer() {
@@ -38,12 +34,35 @@ async function startServer() {
 
         const actualizarResultadosGlobal = async () => {
             try {
+                const mesasConResultados = await Mesa.aggregate([
+                    {
+                        $lookup: {
+                            from: 'resultados',
+                            localField: 'id',
+                            foreignField: 'id_mesa',
+                            as: 'votos_por_partido'
+                        }
+                    },
+                    {
+                        $addFields: {
+                            total_votos: { $sum: "$votos_por_partido.cantidad_votos" }
+                        }
+                    },
+                    {
+                        $addFields: { numero_ord: { $toInt: '$numero' } }
+                    },
+                    {
+                        $sort: { numero_ord: 1 }
+                    }
+                ]);
+
                 const state = {
                     partidos: await Partido.find({}),
                     establecimientos: await Establecimiento.find({}),
-                    mesas: await Mesa.find({}),
+                    mesas: mesasConResultados,
                     resultados: await Resultado.find({})
                 };
+
                 io.emit('actualizacion_global', state);
                 console.log('Estado global actualizado y enviado a los clientes.');
             } catch (error) {
@@ -56,14 +75,41 @@ async function startServer() {
         // ESTADO INICIAL
         app.get('/api/estado', async (req, res) => {
             try {
+                const mesasConResultados = await Mesa.aggregate([
+                    {
+                        $lookup: {
+                            from: 'resultados',
+                            localField: 'id',
+                            foreignField: 'id_mesa',
+                            as: 'votos_por_partido'
+                        }
+                    },
+                    {
+                        $addFields: {
+                            total_votos: { $sum: "$votos_por_partido.cantidad_votos" }
+                        }
+                    },
+                    {
+                        $addFields: {
+                            numero_ord: { $toInt: '$numero' }
+                        }
+                    },
+                    {
+                        $sort: {
+                            numero_ord: 1
+                        }
+                    }
+                ]);
+
                 const state = {
                     partidos: await Partido.find({}),
                     establecimientos: await Establecimiento.find({}),
-                    mesas: await Mesa.find({}),
+                    mesas: mesasConResultados,
                     resultados: await Resultado.find({})
                 };
                 res.json(state);
             } catch (error) {
+                console.error("Error al obtener estado:", error);
                 res.status(500).json({ message: "Error al obtener el estado" });
             }
         });
@@ -78,7 +124,7 @@ async function startServer() {
             }
         });
 
-        // CREAR PARTIDO
+        // OTRAS RUTAS (sin cambios)
         app.post('/api/partidos', async (req, res) => {
             const nuevoPartido = new Partido({ id: nanoid(), ...req.body });
             await nuevoPartido.save();
@@ -86,14 +132,12 @@ async function startServer() {
             res.status(201).json(nuevoPartido);
         });
         
-        // BORRAR PARTIDO
         app.delete('/api/partidos/:id', async (req, res) => {
             await Partido.deleteOne({ id: req.params.id });
             actualizarResultadosGlobal();
             res.status(200).json({ message: 'Partido eliminado' });
         });
 
-        // CREAR ESTABLECIMIENTO
         app.post('/api/establecimientos', async (req, res) => {
             const nuevoEst = new Establecimiento({ id: nanoid(), ...req.body });
             await nuevoEst.save();
@@ -101,14 +145,12 @@ async function startServer() {
             res.status(201).json(nuevoEst);
         });
 
-        // BORRAR ESTABLECIMIENTO
         app.delete('/api/establecimientos/:id', async (req, res) => {
             await Establecimiento.deleteOne({ id: req.params.id });
             actualizarResultadosGlobal();
             res.status(200).json({ message: 'Establecimiento eliminado' });
         });
 
-        // CREAR MESA
         app.post('/api/mesas', async (req, res) => {
             const nuevaMesa = new Mesa({ id: nanoid(), ...req.body });
             await nuevaMesa.save();
@@ -116,15 +158,13 @@ async function startServer() {
             res.status(201).json(nuevaMesa);
         });
 
-        // BORRAR MESA
         app.delete('/api/mesas/:id', async (req, res) => {
             await Mesa.deleteOne({ id: req.params.id });
-            await Resultado.deleteMany({ id_mesa: req.params.id }); // Borra votos asociados
+            await Resultado.deleteMany({ id_mesa: req.params.id });
             actualizarResultadosGlobal();
             res.status(200).json({ message: 'Mesa eliminada' });
         });
 
-        // CARGAR VOTOS
         app.post('/api/cargar-votos', async (req, res) => {
             const { id_mesa, votos, esDudosa } = req.body;
             await Resultado.deleteMany({ id_mesa: id_mesa });
@@ -142,10 +182,9 @@ async function startServer() {
             res.status(201).json({ message: 'Resultados cargados con éxito' });
         });
 
-        // --- LÓGICA DE WEBSOCKETS ---
+        // WEBSOCKETS (sin cambios)
         io.on('connection', (socket) => {
             console.log(`Un usuario se ha conectado: ${socket.id}`);
-            // No enviar estado al conectar, el frontend lo pide vía /api/estado
             socket.on('disconnect', () => {
               console.log(`El usuario se ha desconectado: ${socket.id}`);
             });
@@ -161,4 +200,4 @@ async function startServer() {
     }
 }
 
-startServer(); // Ejecutar la función principal
+startServer();

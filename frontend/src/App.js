@@ -7,7 +7,6 @@ import './App.css';
 
 // Registrar componentes y conectar al socket
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-// ¡IMPORTANTE! Esta URL debe ser la de tu backend en Render
 const SOCKET_URL = 'https://servidor-votos-avellaneda.onrender.com';
 const socket = io(SOCKET_URL);
 
@@ -60,6 +59,7 @@ const GestionEstablecimientos = ({ establecimientos, onAdd, onDelete }) => {
     );
 };
 
+// ¡AQUÍ ESTÁ LA MODIFICACIÓN EN EL FRONTEND!
 const GestionMesas = ({ mesas, establecimientos, onAdd, onDelete }) => {
     const [numero, setNumero] = useState('');
     const [idEstablecimiento, setIdEstablecimiento] = useState('');
@@ -76,8 +76,22 @@ const GestionMesas = ({ mesas, establecimientos, onAdd, onDelete }) => {
         <div className="gestion-section">
             <ul>
                 {mesas.map(m => {
+                    // Ahora la información viene directamente del backend.
+                    // Ya no necesitamos buscar el establecimiento.
+                    const totalVotos = m.total_votos || 0; // Usamos el campo calculado o 0 si no existe.
+                    
+                    // Buscamos el nombre del establecimiento para mostrarlo, como antes.
                     const est = establecimientos.find(e => e.id === m.id_establecimiento);
-                    return <li key={m.id}><span>Mesa: {m.numero} ({est ? est.nombre : 'N/A'})</span><button onClick={() => onDelete(m.id)} className="delete-btn">X</button></li>
+                    const nombreEstablecimiento = est ? est.nombre : 'N/A';
+
+                    return (
+                        <li key={m.id || m._id}> {/* Usamos m._id como fallback por si acaso */}
+                            <span>
+                                Mesa: {m.numero} ({nombreEstablecimiento}) - Votos: {totalVotos}
+                            </span>
+                            <button onClick={() => onDelete(m.id)} className="delete-btn">X</button>
+                        </li>
+                    );
                 })}
             </ul>
             <form onSubmit={handleSubmit}>
@@ -292,8 +306,6 @@ const PublicDashboard = ({ data }) => {
             "PARTIDO POLITICA OBRERA": "#e67e22",
             "ALIANZA POTENCIA": "#1abc9c",
             "ALIANZA NUEVOS AIRES": "#9b59b6",
-            // Asegúrate de que los nombres de los partidos aquí
-            // sean EXACTAMENTE iguales a como están en tu base de datos.
         };
 
         let resultadosAMostrar = data.resultados;
@@ -316,7 +328,7 @@ const PublicDashboard = ({ data }) => {
         const sortedTotals = Object.entries(votosPorPartido).sort(([, a], [, b]) => b - a);
 
         const coloresDeBarras = sortedTotals.map(([nombrePartido, _]) => {
-            return coloresPorPartido[nombrePartido] || '#36A2EB'; // Color por defecto si no se encuentra
+            return coloresPorPartido[nombrePartido] || '#36A2EB';
         });
 
         const chartData = {
