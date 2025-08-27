@@ -96,10 +96,9 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
     const [idMesa, setIdMesa] = useState('');
     const [votos, setVotos] = useState({});
     const [esDudosa, setEsDudosa] = useState(false);
-    // Nuevo estado para saber si la mesa seleccionada ya tiene votos cargados.
     const [mesaTieneVotos, setMesaTieneVotos] = useState(false);
+    const [mensajeConfirmacion, setMensajeConfirmacion] = useState('');
 
-    // Lógica para separar las mesas en dos listas: pendientes y cargadas
     const { mesasCargadas, mesasPendientes } = useMemo(() => {
         if (!mesas || !data.resultados) {
             return { mesasCargadas: [], mesasPendientes: [] };
@@ -118,18 +117,18 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
     }, [mesas, data.resultados]);
     
     useEffect(() => {
+        setMensajeConfirmacion('');
+
         if (!idMesa) {
             const initialState = {};
             partidos.forEach(p => { initialState[p.id] = ''; });
             setVotos(initialState);
             setEsDudosa(false);
-            setMesaTieneVotos(false); // Si no hay mesa seleccionada, no tiene votos.
+            setMesaTieneVotos(false);
             return;
         }
 
         const resultadosDeLaMesa = data.resultados?.filter(r => r.id_mesa === idMesa) || [];
-        
-        // Actualizamos el nuevo estado
         setMesaTieneVotos(resultadosDeLaMesa.length > 0);
 
         if (resultadosDeLaMesa.length > 0) {
@@ -148,25 +147,30 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
     }, [idMesa, data.resultados, partidos]);
 
     const handleVoteChange = (id_partido, cantidad) => {
-        setVotos(prev => ({...prev, [id_partido]: cantidad}));
+        if (cantidad === '' || /^[0-9\b]+$/.test(cantidad)) {
+            setVotos(prev => ({...prev, [id_partido]: cantidad}));
+        }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!idMesa) return;
         const votosPayload = Object.entries(votos).map(([id_partido, cantidad]) => ({
             id_partido,
             cantidad: parseInt(cantidad) || 0
         }));
-        onCargar({ id_mesa: idMesa, votos: votosPayload, esDudosa });
+        
+        await onCargar({ id_mesa: idMesa, votos: votosPayload, esDudosa });
+
+        setMensajeConfirmacion('¡Cambios guardados con éxito!');
+        setTimeout(() => {
+            setMensajeConfirmacion('');
+        }, 3000);
     };
 
-    // Nueva función: para manejar el borrado de votos de una mesa.
     const handleBorrarVotos = () => {
         if (window.confirm(`¿Estás seguro de que quieres borrar TODOS los votos de la mesa seleccionada? La mesa volverá a la lista de pendientes.`)) {
-            // Llamamos a la misma función de carga, pero con un array de votos vacío.
             onCargar({ id_mesa: idMesa, votos: [], esDudosa: false });
-            // Limpiamos la selección para que el usuario vea el cambio en las listas.
             setIdMesa('');
         }
     };
@@ -192,13 +196,22 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
                     })}
                 </select>
 
+                {mensajeConfirmacion && <p className="mensaje-confirmacion">{mensajeConfirmacion}</p>}
+
                 {idMesa && (
                     <>
                         <div className="votos-inputs">
                             {partidos.map(p => (
                                 <div key={p.id}>
                                     <label>{p.nombre}</label>
-                                    <input type="number" value={votos[p.id] || ''} onChange={e => handleVoteChange(p.id, e.target.value)} placeholder="Votos" />
+                                    <input 
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        value={votos[p.id] || ''} 
+                                        onChange={e => handleVoteChange(p.id, e.target.value)} 
+                                        placeholder="Votos" 
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -208,7 +221,6 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
                         </div>
                         <div className="form-actions">
                             <button type="submit">Guardar Votos de la Mesa</button>
-                            {/* Nuevo botón: Se muestra solo si la mesa ya tiene votos cargados */}
                             {mesaTieneVotos && (
                                 <button type="button" onClick={handleBorrarVotos} className="borrar-votos-btn">
                                     Borrar Votos y Mover a Pendientes

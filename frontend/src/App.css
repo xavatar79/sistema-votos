@@ -299,3 +299,37 @@ button:hover {
     grid-template-columns: 1fr 1fr 1fr; /* 3 columnas en pantallas grandes */
   }
 }
+
+/* --- INICIO DE NUEVOS ESTILOS AÑADIDOS --- */
+
+/* Estilo para el mensaje de confirmación de guardado */
+.mensaje-confirmacion {
+  background-color: #d4edda; /* Verde claro */
+  color: #155724; /* Verde oscuro */
+  border: 1px solid #c3e6cb;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+  transition: opacity 0.5s ease-out; /* Animación suave */
+}
+
+/* Contenedor para los botones de acción del formulario */
+.form-actions {
+  display: flex;
+  gap: 10px; /* Espacio entre los botones */
+  margin-top: 15px;
+}
+
+/* Estilo para el botón de borrar votos */
+.borrar-votos-btn {
+  background-color: #f8d7da; /* Rojo claro */
+  color: #721c24; /* Rojo oscuro */
+  border: 1px solid #f5c6cb;
+}
+
+.borrar-votos-btn:hover {
+  background-color: #f1b0b7;
+  border-color: #ee9a9a;
+}
