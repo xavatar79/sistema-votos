@@ -144,9 +144,13 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
                     <option value="">-- Seleccionar Mesa --</option>
                     {establecimientos.map(est => (
                         <optgroup label={est.nombre} key={est.id}>
-                            {mesas.filter(m => m.id_establecimiento === est.id).map(m => (
-                                <option key={m.id} value={m.id}>Mesa: {m.numero}</option>
-                            ))}
+                            {mesas
+                                .filter(m => m.id_establecimiento === est.id)
+                                .sort((a, b) => parseInt(a.numero) - parseInt(b.numero)) // <-- ¡¡¡ESTA ES LA LÍNEA AÑADIDA!!!
+                                .map(m => (
+                                    <option key={m.id} value={m.id}>Mesa: {m.numero}</option>
+                                ))
+                            }
                         </optgroup>
                     ))}
                 </select>
