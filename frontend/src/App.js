@@ -92,11 +92,31 @@ const GestionMesas = ({ mesas, establecimientos, onAdd, onDelete }) => {
     );
 };
 
+// --- INICIO DE LA MODIFICACIÓN ---
 const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
     const [idMesa, setIdMesa] = useState('');
     const [votos, setVotos] = useState({});
     const [esDudosa, setEsDudosa] = useState(false);
 
+    // Lógica para separar las mesas en dos listas: pendientes y cargadas
+    const { mesasCargadas, mesasPendientes } = useMemo(() => {
+        if (!mesas || !data.resultados) {
+            return { mesasCargadas: [], mesasPendientes: [] };
+        }
+        const idsMesasCargadas = new Set(data.resultados.map(r => r.id_mesa));
+        const cargadas = [];
+        const pendientes = [];
+        mesas.forEach(mesa => {
+            if (idsMesasCargadas.has(mesa.id)) {
+                cargadas.push(mesa);
+            } else {
+                pendientes.push(mesa);
+            }
+        });
+        return { mesasCargadas: cargadas, mesasPendientes: pendientes };
+    }, [mesas, data.resultados]);
+    
+    // Este useEffect se ejecuta cuando el usuario selecciona una mesa
     useEffect(() => {
         if (!idMesa) {
             const initialState = {};
@@ -137,18 +157,22 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
         onCargar({ id_mesa: idMesa, votos: votosPayload, esDudosa });
     };
 
+    // Renderizado con dos menús desplegables
     return (
         <div className="gestion-section carga-votos">
             <form onSubmit={handleSubmit}>
-                {/* --- INICIO DE LA MODIFICACIÓN --- */}
-                <select value={idMesa} onChange={e => setIdMesa(e.target.value)} required>
-                    <option value="">-- Seleccionar Mesa --</option>
-                    {mesas
+                <label htmlFor="mesas-pendientes">1. Seleccionar Mesa para Cargar Votos:</label>
+                <select 
+                    id="mesas-pendientes"
+                    value={idMesa} 
+                    onChange={e => setIdMesa(e.target.value)} 
+                >
+                    <option value="">-- Quedan {mesasPendientes.length} mesas por cargar --</option>
+                    {mesasPendientes
                         .sort((a, b) => parseInt(a.numero) - parseInt(b.numero))
                         .map(m => {
                             const est = establecimientos.find(e => e.id === m.id_establecimiento);
                             const nombreEstablecimiento = est ? est.nombre : 'Sin Escuela';
-                            
                             return (
                                 <option key={m.id} value={m.id}>
                                     Mesa: {m.numero} ({nombreEstablecimiento})
@@ -157,8 +181,28 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
                         })
                     }
                 </select>
-                {/* --- FIN DE LA MODIFICACIÓN --- */}
-                
+
+                <label htmlFor="mesas-cargadas">2. O seleccionar una Mesa ya Cargada para Editar:</label>
+                <select 
+                    id="mesas-cargadas"
+                    value={idMesa} 
+                    onChange={e => setIdMesa(e.target.value)} 
+                >
+                    <option value="">-- Hay {mesasCargadas.length} mesas cargadas --</option>
+                    {mesasCargadas
+                        .sort((a, b) => parseInt(a.numero) - parseInt(b.numero))
+                        .map(m => {
+                            const est = establecimientos.find(e => e.id === m.id_establecimiento);
+                            const nombreEstablecimiento = est ? est.nombre : 'Sin Escuela';
+                            return (
+                                <option key={m.id} value={m.id}>
+                                    Mesa: {m.numero} ({nombreEstablecimiento})
+                                </option>
+                            );
+                        })
+                    }
+                </select>
+
                 {idMesa && (
                     <>
                         <div className="votos-inputs">
@@ -180,6 +224,7 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
         </div>
     );
 };
+// --- FIN DE LA MODIFICACIÓN ---
 
 const AdminPanel = ({ data, onLogout }) => {
     const handleApiCall = async (endpoint, method, body = null) => {
