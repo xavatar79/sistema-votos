@@ -92,11 +92,12 @@ const GestionMesas = ({ mesas, establecimientos, onAdd, onDelete }) => {
     );
 };
 
-// --- INICIO DE LA MODIFICACIÓN ---
 const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
     const [idMesa, setIdMesa] = useState('');
     const [votos, setVotos] = useState({});
     const [esDudosa, setEsDudosa] = useState(false);
+    // Nuevo estado para saber si la mesa seleccionada ya tiene votos cargados.
+    const [mesaTieneVotos, setMesaTieneVotos] = useState(false);
 
     // Lógica para separar las mesas en dos listas: pendientes y cargadas
     const { mesasCargadas, mesasPendientes } = useMemo(() => {
@@ -116,18 +117,21 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
         return { mesasCargadas: cargadas, mesasPendientes: pendientes };
     }, [mesas, data.resultados]);
     
-    // Este useEffect se ejecuta cuando el usuario selecciona una mesa
     useEffect(() => {
         if (!idMesa) {
             const initialState = {};
             partidos.forEach(p => { initialState[p.id] = ''; });
             setVotos(initialState);
             setEsDudosa(false);
+            setMesaTieneVotos(false); // Si no hay mesa seleccionada, no tiene votos.
             return;
         }
 
         const resultadosDeLaMesa = data.resultados?.filter(r => r.id_mesa === idMesa) || [];
         
+        // Actualizamos el nuevo estado
+        setMesaTieneVotos(resultadosDeLaMesa.length > 0);
+
         if (resultadosDeLaMesa.length > 0) {
             const votosCargados = {};
             resultadosDeLaMesa.forEach(res => {
@@ -157,50 +161,35 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
         onCargar({ id_mesa: idMesa, votos: votosPayload, esDudosa });
     };
 
-    // Renderizado con dos menús desplegables
+    // Nueva función: para manejar el borrado de votos de una mesa.
+    const handleBorrarVotos = () => {
+        if (window.confirm(`¿Estás seguro de que quieres borrar TODOS los votos de la mesa seleccionada? La mesa volverá a la lista de pendientes.`)) {
+            // Llamamos a la misma función de carga, pero con un array de votos vacío.
+            onCargar({ id_mesa: idMesa, votos: [], esDudosa: false });
+            // Limpiamos la selección para que el usuario vea el cambio en las listas.
+            setIdMesa('');
+        }
+    };
+
     return (
         <div className="gestion-section carga-votos">
             <form onSubmit={handleSubmit}>
                 <label htmlFor="mesas-pendientes">1. Seleccionar Mesa para Cargar Votos:</label>
-                <select 
-                    id="mesas-pendientes"
-                    value={idMesa} 
-                    onChange={e => setIdMesa(e.target.value)} 
-                >
+                <select id="mesas-pendientes" value={idMesa} onChange={e => setIdMesa(e.target.value)}>
                     <option value="">-- Quedan {mesasPendientes.length} mesas por cargar --</option>
-                    {mesasPendientes
-                        .sort((a, b) => parseInt(a.numero) - parseInt(b.numero))
-                        .map(m => {
-                            const est = establecimientos.find(e => e.id === m.id_establecimiento);
-                            const nombreEstablecimiento = est ? est.nombre : 'Sin Escuela';
-                            return (
-                                <option key={m.id} value={m.id}>
-                                    Mesa: {m.numero} ({nombreEstablecimiento})
-                                </option>
-                            );
-                        })
-                    }
+                    {mesasPendientes.sort((a, b) => parseInt(a.numero) - parseInt(b.numero)).map(m => {
+                        const est = establecimientos.find(e => e.id === m.id_establecimiento);
+                        return <option key={m.id} value={m.id}>Mesa: {m.numero} ({est ? est.nombre : 'S/E'})</option>;
+                    })}
                 </select>
 
                 <label htmlFor="mesas-cargadas">2. O seleccionar una Mesa ya Cargada para Editar:</label>
-                <select 
-                    id="mesas-cargadas"
-                    value={idMesa} 
-                    onChange={e => setIdMesa(e.target.value)} 
-                >
+                <select id="mesas-cargadas" value={idMesa} onChange={e => setIdMesa(e.target.value)}>
                     <option value="">-- Hay {mesasCargadas.length} mesas cargadas --</option>
-                    {mesasCargadas
-                        .sort((a, b) => parseInt(a.numero) - parseInt(b.numero))
-                        .map(m => {
-                            const est = establecimientos.find(e => e.id === m.id_establecimiento);
-                            const nombreEstablecimiento = est ? est.nombre : 'Sin Escuela';
-                            return (
-                                <option key={m.id} value={m.id}>
-                                    Mesa: {m.numero} ({nombreEstablecimiento})
-                                </option>
-                            );
-                        })
-                    }
+                    {mesasCargadas.sort((a, b) => parseInt(a.numero) - parseInt(b.numero)).map(m => {
+                        const est = establecimientos.find(e => e.id === m.id_establecimiento);
+                        return <option key={m.id} value={m.id}>Mesa: {m.numero} ({est ? est.nombre : 'S/E'})</option>;
+                    })}
                 </select>
 
                 {idMesa && (
@@ -214,17 +203,24 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
                             ))}
                         </div>
                         <div className="checkbox-dudosa">
-                          <input type="checkbox" id="dudosa" checked={esDudosa} onChange={e => setEsDudosa(e.target.checked)} />
-                          <label htmlFor="dudosa">Marcar como Mesa Dudosa ⚠️</label>
+                            <input type="checkbox" id="dudosa" checked={esDudosa} onChange={e => setEsDudosa(e.target.checked)} />
+                            <label htmlFor="dudosa">Marcar como Mesa Dudosa ⚠️</label>
                         </div>
-                        <button type="submit">Guardar Votos de la Mesa</button>
+                        <div className="form-actions">
+                            <button type="submit">Guardar Votos de la Mesa</button>
+                            {/* Nuevo botón: Se muestra solo si la mesa ya tiene votos cargados */}
+                            {mesaTieneVotos && (
+                                <button type="button" onClick={handleBorrarVotos} className="borrar-votos-btn">
+                                    Borrar Votos y Mover a Pendientes
+                                </button>
+                            )}
+                        </div>
                     </>
                 )}
             </form>
         </div>
     );
 };
-// --- FIN DE LA MODIFICACIÓN ---
 
 const AdminPanel = ({ data, onLogout }) => {
     const handleApiCall = async (endpoint, method, body = null) => {
