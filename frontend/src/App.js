@@ -1,11 +1,11 @@
 // frontend/src/App.js
 
-import React, { useState, useEffect } from 'react';
+import React, 'useState', 'useEffect' from 'react';
 import io from 'socket.io-client';
 import './App.css';
 
 // Obtenemos la URL de la API desde las variables de entorno
-const API_URL = import.meta.env.VITE_API_URL; // <-- CAMBIO
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Conectamos con el servidor de Socket.IO
 const socket = io(API_URL, { withCredentials: true });
@@ -20,15 +20,12 @@ function App() {
     useEffect(() => {
         const cargarEstadoInicial = async () => {
             try {
-                // --- CAMBIO: Usamos fetch directamente ---
                 const response = await fetch(`${API_URL}/estado`);
                 if (!response.ok) {
                     throw new Error(`Error HTTP: ${response.status}`);
                 }
                 const data = await response.json();
-                procesarYOrdenarEstado(data);
-                // --- FIN DEL CAMBIO ---
-
+                procesarEstado(data); // Usamos la función sin ordenamiento
             } catch (error) {
                 console.error("Error al cargar estado inicial:", error);
             }
@@ -38,7 +35,7 @@ function App() {
 
         socket.on('actualizacion_global', (nuevoEstado) => {
             console.log("Recibida actualización global desde el servidor");
-            procesarYOrdenarEstado(nuevoEstado);
+            procesarEstado(nuevoEstado); // Usamos la función sin ordenamiento
         });
 
         return () => {
@@ -46,8 +43,8 @@ function App() {
         };
     }, []);
 
-    // --- ¡AQUÍ ESTÁ LA LÓGICA CLAVE! ---
-    const procesarYOrdenarEstado = (estadoActual) => {
+    // --- ESTA ES LA LÓGICA ORIGINAL DE AGRUPACIÓN (SIN ORDENAMIENTO) ---
+    const procesarEstado = (estadoActual) => {
         setEstado(estadoActual);
 
         if (estadoActual.mesas && estadoActual.establecimientos) {
@@ -59,13 +56,6 @@ function App() {
                 }
                 agrupado[mesa.id_establecimiento].push(mesa);
             });
-
-            // ¡LA SOLUCIÓN! Ordenamos las mesas DENTRO de cada grupo
-            for (const idEstablecimiento in agrupado) {
-                agrupado[idEstablecimiento].sort((a, b) => {
-                    return parseInt(a.numero) - parseInt(b.numero);
-                });
-            }
             
             setMesasAgrupadas(agrupado);
         }
@@ -74,7 +64,6 @@ function App() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            // --- CAMBIO: Usamos fetch para el login ---
             const response = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: {
@@ -91,17 +80,14 @@ function App() {
             } else {
                 setErrorLogin(data.message || 'Contraseña incorrecta.');
             }
-            // --- FIN DEL CAMBIO ---
-
         } catch (error) {
             setErrorLogin('Error de conexión con el servidor.');
             console.error('Error de login:', error);
         }
     };
 
-    // ... (El resto del JSX para renderizar el componente es exactamente el mismo que antes)
-    
-    // Lo pego aquí para que tengas el archivo completo:
+    // --- RENDERIZADO DEL COMPONENTE ---
+    // (Asumo que esta parte de tu código ya está funcionando bien)
     const renderPanelAdmin = () => {
         if (!isAdmin || !estado) return null;
 
@@ -126,14 +112,14 @@ function App() {
                         ))
                     }
                 </select>
+                {/* ... El resto de tu formulario de carga de votos ... */}
             </div>
         );
     };
 
     return (
         <div className="App">
-            {/* ... Aquí va tu JSX principal ... */}
-            {/* Por ejemplo, el formulario de login */}
+            {/* ... Tu JSX principal ... */}
             {!isAdmin ? (
                 <form onSubmit={handleLogin}>
                     <h3>Acceso al Panel de Administración</h3>
