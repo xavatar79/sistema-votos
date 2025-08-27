@@ -140,20 +140,25 @@ const CargaVotos = ({ data, partidos, mesas, establecimientos, onCargar }) => {
     return (
         <div className="gestion-section carga-votos">
             <form onSubmit={handleSubmit}>
+                {/* --- INICIO DE LA MODIFICACIÓN --- */}
                 <select value={idMesa} onChange={e => setIdMesa(e.target.value)} required>
                     <option value="">-- Seleccionar Mesa --</option>
-                    {establecimientos.map(est => (
-                        <optgroup label={est.nombre} key={est.id}>
-                            {mesas
-                                .filter(m => m.id_establecimiento === est.id)
-                                .sort((a, b) => parseInt(a.numero) - parseInt(b.numero)) // <-- ¡¡¡ESTA ES LA LÍNEA AÑADIDA!!!
-                                .map(m => (
-                                    <option key={m.id} value={m.id}>Mesa: {m.numero}</option>
-                                ))
-                            }
-                        </optgroup>
-                    ))}
+                    {mesas
+                        .sort((a, b) => parseInt(a.numero) - parseInt(b.numero))
+                        .map(m => {
+                            const est = establecimientos.find(e => e.id === m.id_establecimiento);
+                            const nombreEstablecimiento = est ? est.nombre : 'Sin Escuela';
+                            
+                            return (
+                                <option key={m.id} value={m.id}>
+                                    Mesa: {m.numero} ({nombreEstablecimiento})
+                                </option>
+                            );
+                        })
+                    }
                 </select>
+                {/* --- FIN DE LA MODIFICACIÓN --- */}
+                
                 {idMesa && (
                     <>
                         <div className="votos-inputs">
