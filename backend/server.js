@@ -9,7 +9,7 @@ const { nanoid } = require('nanoid');
 
 // --- CONFIGURACIÓN DE SECRETOS Y VARIABLES DE ENTORNO ---
 const MONGO_URI = process.env.MONGO_URI;
-const FRONTEND_URL = process.env.FRONTEND_URL || "https-sistema-votos-beta.vercel.app";
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://sistema-votos-beta.vercel.app";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "LLA_AVELLANEDA_2025";
 const PORT = process.env.PORT || 4000;
 
